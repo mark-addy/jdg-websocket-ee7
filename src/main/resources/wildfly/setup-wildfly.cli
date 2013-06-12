@@ -1,0 +1,11 @@
+/server-group=other-server-group:stop-servers()
+/server-group=main-server-group:stop-servers()
+/host=master/server-config=server-three:write-attribute(name=group, value=main-server-group)
+/host=master/server-config=server-three:write-attribute(name=auto-start, value=true)
+/server-group=other-server-group:remove()
+/server-group=main-server-group:write-attribute(name=profile, value=full)
+/host=master/server-config=server-one:write-attribute(name=socket-binding-port-offset, value=0)
+/host=master/server-config=server-two:write-attribute(name=socket-binding-port-offset, value=100)
+/host=master/server-config=server-three:write-attribute(name=socket-binding-port-offset, value=200)
+/:reload-servers
+/:start-servers

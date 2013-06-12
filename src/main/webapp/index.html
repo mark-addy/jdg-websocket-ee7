@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <title>JBoss Data Grid Events over Wildfly Websockets</title>
+	    
+		<link rel="stylesheet" href="css/ws-demo.css" />
+		
+	    <script src="js/jquery-1.7.2.js"></script>
+	    <script src="js/jquery-tmpl.js"></script>
+	    <script src="js/ws_events_dispatcher.js"></script>
+	    
+	    <script type="text/javascript">
+	    
+	    	var availableMatchList = {};
+	    	var availableMatchListBuilt = false;
+	    	
+			/*
+			 * http://javascript.crockford.com/remedial.html
+			 */
+			if (!String.prototype.supplant) {
+				String.prototype.supplant = function(o) {
+					return this.replace(/{([^{}]*)}/g, function(a, b) {
+						var r = o[b];
+						return typeof r === 'string' || typeof r === 'number' ? r : a;
+					});
+				};
+			}	    	
+			
+			
+			function buildAvailableMatches(matchArray) {
+			
+				/** 
+				 * build sorted list of matches 
+				 */
+				var matchArray = $(matchArray).map(function() {return this}).get();
+				matchArray.sort(function(a, b) {
+					return (a.type < b.type) ? -1 : (a.type > b.type) ? 1 : 0
+				});
+			
+				var tbody = $('#availableMatchList tbody');
+				$(matchArray).each(function() {
+					var tableRow = $('#matchRowTemplate').tmpl(this).appendTo(tbody);
+					availableMatchList[this.key] = this;
+				});	
+				
+				/*
+				 * apply some style
+				 */
+				$(function() {
+			        /* zebra striping */
+			        $("table tr:nth-child(odd)").addClass("odd-row");
+			        /* cell text alignment */
+			        $("table td:first-child, table th:first-child").addClass("first");
+			        /* remove last border */
+			        $("table td:last-child, table th:last-child").addClass("last");
+				});
+			}	    	
+	    
+			function updateMatchRow(thisMatch) {
+				
+				var oldMatch = availableMatchList[thisMatch.key];
+				var oldOddsHomeWin = oldMatch.matchOdds.homeWin;
+				var oldOddsDraw = oldMatch.matchOdds.draw;
+				var oldOddsAwayWin = oldMatch.matchOdds.awayWin;
+			
+				var homeWinChange = ((oldOddsHomeWin != 0) ? (thisMatch.matchOdds.homeWin - oldOddsHomeWin) : 0).toFixed(2);
+				var drawChange = ((oldOddsDraw != 0) ? (thisMatch.matchOdds.draw - oldOddsDraw) : 0).toFixed(2);
+				var awayWinChange = ((oldOddsAwayWin != 0) ? (thisMatch.matchOdds.awayWin - oldOddsAwayWin) : 0).toFixed(2);
+
+				availableMatchList[thisMatch.key] = thisMatch;
+				
+				var matchRow = $('#matchRow_{key}'.supplant(thisMatch)); 
+				matchRow.find('td.type').html(thisMatch.type); 
+				matchRow.find('td.home').html(thisMatch.home); 
+				matchRow.find('td.away').html(thisMatch.away); 
+				matchRow.find('[name="oddsHomeWin"]').html((thisMatch.matchOdds.homeWin).toFixed(2)); 
+				matchRow.find('[name="oddsDraw"]').html((thisMatch.matchOdds.draw).toFixed(2)); 
+				matchRow.find('[name="oddsAwayWin"]').html((thisMatch.matchOdds.awayWin).toFixed(2)); 
+			
+				var homeWinSign = (homeWinChange != 0) ? homeWinChange / Math.abs(homeWinChange) : 0;
+				var drawSign = (drawChange != 0) ? drawChange / Math.abs(drawChange) : 0;
+				var awayWinSign = (awayWinChange != 0) ? awayWinChange / Math.abs(awayWinChange) : 0;
+
+				var homeWinChangeClass = homeWinSign == 1 ? 'upChange' : homeWinSign == -1 ? 'downChange' : 'noChange'
+				matchRow.find('[name="oddsHomeWin"]').removeClass('upChange downChange noChange').addClass(homeWinChangeClass);
+
+				var drawChangeClass = drawSign == 1 ? 'upChange' : drawSign == -1 ? 'downChange' : 'noChange'
+				matchRow.find('[name="oddsDraw"]').removeClass('upChange downChange noChange').addClass(drawChangeClass);
+
+				var awayWinChangeClass = awayWinSign == 1 ? 'upChange' : awayWinSign == -1 ? 'downChange' : 'noChange'
+				matchRow.find('[name="oddsAwayWin"]').removeClass('upChange downChange noChange').addClass(awayWinChangeClass);
+			
+			}	    
+	    
+	        var WS = {};
+	        WS.socket = null;
+	
+	        WS.connect = (function(host) {
+	            if ('WebSocket' in window) {
+	                WS.socket = new FancyWebSocket(host);
+	            } else {
+	                return;
+	            }
+	        });
+	
+	        WS.initialize = function() {
+	            WS.connect('ws://' + window.location.host + window.location.pathname + '/websocket');
+	        };
+	
+	        WS.initialize();
+
+			WS.socket.bind('update', function(matchData){
+				if (availableMatchListBuilt) {
+		            updateMatchRow(matchData);
+				}	
+			})
+			WS.socket.bind('start', function(matchData){
+				if (!availableMatchListBuilt) {
+			        buildAvailableMatches(matchData);
+			        availableMatchListBuilt = true;
+				}	
+			})
+
+	    </script>
+	</head>
+	<body>
+		<noscript>
+			<h2>Seems your browser doesn't support Javascript! Websockets rely on Javascript being enabled. Please enable Javascript and reload this page!</h2>
+		</noscript>
+		<div id="wrapper">
+			<div id="wrapper2">
+				<div id="logo">
+					<a href="http://www.c2b2.co.uk" target="_blank"><img src="images/C2B2 Logo small.gif" width="200" height="63"></img></a>
+				</div>
+				<header>
+					<h1>JBoss Data Grid Events over Wildfly Websockets</h1>
+				</header>	
+				<table id="availableMatchList">
+					<thead>
+						<tr>
+							<th class="narrow">Type</th>
+							<th class="wide">Home</th>
+							<th class="wide">Away</th>
+							<th class="wide">Home Win</th>
+							<th class="wide">Draw</th>
+							<th class="wide">Away Win</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+				<!--  
+				<div>
+					<a href="downloads/infinispan-websocket-source.zip">Download the source code</a>
+				</div>
+				-->		    
+			</div>
+		</div>
+	</body>
+	<script id="matchRowTemplate" type="text/x-jquery-tmpl">
+		<tr id="matchRow_${key}" >
+			<td name="type">
+				${type}
+			</td>
+			<td name="home">
+				${home}
+			</td>
+			<td name="away">
+				${away}
+			</td>
+			<td name="oddsHomeWin">
+				${matchOdds.homeWin}
+			</td>
+			<td name="oddsDraw">
+				${matchOdds.draw}
+			</td>
+			<td name="oddsAwayWin">
+				${matchOdds.awayWin}
+			</td>
+		</tr>
+	</script>
+</html>

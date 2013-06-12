@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2011 Red Hat, Inc. and/or its affiliates.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this library; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA
+  -->
+
+<infinispan
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="urn:infinispan:config:5.2 http://www.infinispan.org/schemas/infinispan-config-5.2.xsd"
+      xmlns="urn:infinispan:config:5.2">
+
+   <global>
+      <globalJmxStatistics
+            enabled="true" 
+            jmxDomain="org.infinispan1" 
+            cacheManagerName="GTACacheManager"/>
+      <transport
+            clusterName="${hotrod.cluster.name}" 
+            machineId="${hotrod.machine.id}" 
+            rackId="${hotrod.rack.id}" 
+            nodeName="${hotrod.node.name}">
+         <properties>
+            <property name="configurationFile" value="gta-jgroups-udp.xml" />
+         </properties>
+      </transport>
+   </global>
+
+   <default>
+      <jmxStatistics enabled="true"/>
+   </default>
+
+   <namedCache name="pegs-cache">
+      <jmxStatistics enabled="true"/>
+      <clustering mode="distribution">
+         <sync/>
+         <hash numOwners="2" />
+         <l1 enabled="false" />
+      </clustering>
+      <!--dataContainer keyEquivalence="org.infinispan.util.MyByteArrayEquivalence" /-->
+      <expiration wakeUpInterval="5000" lifespan="15000000" maxIdle="15000000"/>
+   </namedCache>
+
+   <namedCache name="bonotel-cache">
+      <jmxStatistics enabled="true"/>
+      <clustering mode="distribution">
+         <sync/>
+         <hash numOwners="2" />
+         <l1 enabled="false" />
+      </clustering>
+      <!--dataContainer keyEquivalence="org.infinispan.util.MyByteArrayEquivalence" /-->
+      <expiration wakeUpInterval="5000" lifespan="15000000" maxIdle="15000000"/>
+   </namedCache>
+
+   <namedCache name="derby-soft-cache">
+      <jmxStatistics enabled="true"/>
+      <clustering mode="distribution">
+         <sync/>
+         <hash numOwners="2" />
+         <l1 enabled="false" />
+      </clustering>
+      <!--dataContainer keyEquivalence="org.infinispan.util.MyByteArrayEquivalence" /-->
+      <expiration wakeUpInterval="5000" lifespan="15000000" maxIdle="15000000"/>
+   </namedCache>
+
+   <namedCache name="hbsi-cache">
+      <jmxStatistics enabled="true"/>
+      <clustering mode="distribution">
+         <sync/>
+         <hash numOwners="2" />
+         <l1 enabled="false" />
+      </clustering>
+      <!--dataContainer keyEquivalence="org.infinispan.util.MyByteArrayEquivalence" /-->
+      <expiration wakeUpInterval="5000" lifespan="15000000" maxIdle="15000000"/>
+   </namedCache>
+
+   <namedCache name="kobra-cache">
+      <jmxStatistics enabled="true"/>
+      <clustering mode="distribution">
+         <sync/>
+         <hash numOwners="2" />
+         <l1 enabled="false" />
+      </clustering>
+      <!--dataContainer keyEquivalence="org.infinispan.util.MyByteArrayEquivalence" /-->
+      <expiration wakeUpInterval="5000" lifespan="15000000" maxIdle="15000000"/>
+   </namedCache>
+
+<!--
+      <eviction maxEntries="10000" strategy="LRU" />
+      <expiration wakeUpInterval="5000" lifespan="3600000" maxIdle="3600000" reaperEnabled="true"/>
+-->
+</infinispan>

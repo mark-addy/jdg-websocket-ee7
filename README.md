@@ -30,7 +30,9 @@ From now on we'll refer to this location as ${local-jdg-maven-repo}.  We will ne
 
 Get a copy of this source code
 ------------------------------
-git clone https://github.com/mark-addy/jdg-websocket-ee7.git
+
+	git clone https://github.com/mark-addy/jdg-websocket-ee7.git
+
 From now on we'll refer to your local root installation directory of the source code as ${source}
 
 Installation
@@ -53,7 +55,7 @@ Edit pom.xml and update the following path with the value ${local-jdg-maven-repo
 
 Build the application using the following command from the ${source} directory:
 
-mvn clean package
+	mvn clean package
 
 Ok, thats the application built.
 
@@ -61,42 +63,42 @@ HornetQ setup
 -------------
 Extract your hornetq download and copy and replace the non-clustered stand-alone configuration files with those contained within this project:
 
-cp ${source}/src/main/resources/hornetq/config/stand-alone/non-clustered/* ${hornetq-home}/config/stand-alone/non-clustered
+	cp ${source}/src/main/resources/hornetq/config/stand-alone/non-clustered/* ${hornetq-home}/config/stand-alone/non-clustered
 
 The changes made to the default HornetQ distribution are as follows:
-1) Turn off message persistence
-2) Change the default netty acceptor port to 6445
+1. Turn off message persistence
+2. Change the default netty acceptor port to 6445
 
 You can now start Hornetq
 
-${hornetq-home}/bin/run.sh
+	${hornetq-home}/bin/run.sh
 
 Wildfly setup
 -------------
 Copy the wildfly distribution to a location of your choice, we'll call this ${wildfly-home}
 Copy the following files from this project into the same location:
 
-cp ${source}/src/main/resources/wildfly/* ${wildfly-home}
+	cp ${source}/src/main/resources/wildfly/* ${wildfly-home}
 
 Run the install, this process:
-1) Extracts the distribution
-2) Creates a management user (using your default login name)
-3) Moves a cli script to the bin directory 
-4) Starts wildfly in domain mode
+1. Extracts the distribution
+2. Creates a management user (using your default login name, with a password of "	Password1!")
+3. Moves a cli script to the bin directory 
+4. Starts wildfly in domain mode
 
-${wildfly-home}/install-wildfly.sh
+	${wildfly-home}/install-wildfly.sh
 
 Open a new window and navigate to the wildfly installation bin directory:
 
-cd ${wildfly-home}/wildfly-8.0.0.Alpha1/bin
+	cd ${wildfly-home}/wildfly-8.0.0.Alpha1/bin
 
 Run the setup CLI script, this process:
-1) Reorganizes the default domain configuration
-2) Creates 3 server instances (server-one, server-two and server-three) with port offsets of 0, 100 and 200 respectively and configures then with the "full" profile and ensures that they are setup to "auto-start"
-3) Re-loads the configuration changes
-4) Starts all the servers
+1. Reorganizes the default domain configuration
+2. Creates 3 server instances (server-one, server-two and server-three) with port offsets of 0, 100 and 200 respectively and configures then with the "full" profile and ensures that they are setup to "auto-start"
+3. Re-loads the configuration changes
+4. Starts all the servers
 
-./jboss-cli.sh --connect --file=setup-wildfly.cli
+	./jboss-cli.sh --connect --file=setup-wildfly.cli
 
 Application Deployment
 ----------------------
@@ -104,7 +106,7 @@ Now we can deploy the application.  Run the following command from the ${wildfly
 
 Note that you will need to substitute ${source} with the path to the root of your download of the project source code...
 
-./jboss-cli.sh --connect --command="deploy --all-server-groups ${source}/target/jdg-websocket.war"
+	./jboss-cli.sh --connect --command="deploy --server-groups=main-server-group ${source}/target/jdg-websocket.war"
 
 
 

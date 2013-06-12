@@ -66,8 +66,8 @@ Extract your hornetq download and copy and replace the non-clustered stand-alone
 	cp ${source}/src/main/resources/hornetq/config/stand-alone/non-clustered/* ${hornetq-home}/config/stand-alone/non-clustered
 
 The changes made to the default HornetQ distribution are as follows:
-1. Turn off message persistence
-2. Change the default netty acceptor port to 6445
+ 1. Turn off message persistence
+ 2. Change the default netty acceptor port to 6445
 
 You can now start Hornetq
 
@@ -81,10 +81,10 @@ Copy the following files from this project into the same location:
 	cp ${source}/src/main/resources/wildfly/* ${wildfly-home}
 
 Run the install, this process:
-1. Extracts the distribution
-2. Creates a management user (using your default login name, with a password of "	Password1!")
-3. Moves a cli script to the bin directory 
-4. Starts wildfly in domain mode
+ 1. Extracts the distribution
+ 2. Creates a management user (using your default login name, with a password of "	Password1!")
+ 3. Moves a cli script to the bin directory 
+ 4. Starts wildfly in domain mode
 
 	${wildfly-home}/install-wildfly.sh
 
@@ -93,10 +93,10 @@ Open a new window and navigate to the wildfly installation bin directory:
 	cd ${wildfly-home}/wildfly-8.0.0.Alpha1/bin
 
 Run the setup CLI script, this process:
-1. Reorganizes the default domain configuration
-2. Creates 3 server instances (server-one, server-two and server-three) with port offsets of 0, 100 and 200 respectively and configures then with the "full" profile and ensures that they are setup to "auto-start"
-3. Re-loads the configuration changes
-4. Starts all the servers
+ 1. Reorganizes the default domain configuration
+ 2. Creates 3 server instances (server-one, server-two and server-three) with port offsets of 0, 100 and 200 respectively and configures then with the "full" profile and ensures that they are setup to "auto-start"
+ 3. Re-loads the configuration changes
+ 4. Starts all the servers
 
 	./jboss-cli.sh --connect --file=setup-wildfly.cli
 
